@@ -12,34 +12,40 @@ public class Buscabanco {
     public String banco;
     public String usuario;
     public String senha;
+    public String sql;
+    public Connection con = null;
+    public ResultSet rs = null;
         
-    public Connection DB() throws ClassNotFoundException, java.lang.NullPointerException, SQLException, InstantiationException, IllegalAccessException{
-        Connection con=null;
+    public String DB() throws ClassNotFoundException, java.lang.NullPointerException, SQLException, InstantiationException, IllegalAccessException{
         try{   
             if(banco.equals("mysql")){
                 Class.forName("com.mysql.jdbc.Driver").newInstance();             
-                con = DriverManager.getConnection("jdbc:mysql://"+servidor+":3306/wp?useTimezone=true&serverTimezone=UTC",usuario,senha);           
-            }    
-            return con;
+                con = DriverManager.getConnection("jdbc:mysql://"+servidor+":3306/",usuario,senha);           
+            }  
          } 
          catch (SQLException e) {  
-            System.out.println("Nao foi possivel conectar ao Banco de Dados.");  
-            System.out.println(e.getMessage()); 
-            return null ; 
+            return "Nao foi possivel conectar ao Banco de Dados.";  
         }
+        return null ; 
     }
     
-    public ResultSet Conexao(String sql) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException{
+    public String Conexao() throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException{
         try{
-            Connection conn = DB();
-            Statement pstm = conn.createStatement();
-            ResultSet rs = pstm.executeQuery(sql);
-            return  rs;     
+            DB();
+            Statement pstm = con.createStatement();
+            rs = pstm.executeQuery(sql);
         }
         catch (SQLException e) {  
-            System.out.println("Nao foi possivel conectar ao tabela."); 
-            System.out.println(e.getMessage()); 
-            return null; 
+            return "Nao foi possivel conectar ao tabela."; 
        }
-    }    
+        return null; 
+    }   
+    
+    
+    public void Executa() throws ClassNotFoundException, NullPointerException, SQLException, InstantiationException, IllegalAccessException{
+        DB();
+        Statement pstm = con.createStatement();
+        rs = pstm.executeQuery(sql);
+    }
+    
 }

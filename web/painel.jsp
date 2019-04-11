@@ -1,3 +1,4 @@
+<%@page import="java.sql.SQLException"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="Controle.Buscabanco"%>
@@ -12,16 +13,21 @@
     Banco.servidor = (String) session.getAttribute("servidor");
     Banco.senha = (String) session.getAttribute("senha");
     Banco.usuario = (String) session.getAttribute("usuario");
-    String sql="";
+    Banco.banco = (String) session.getAttribute("banco");
     
-    if(session.getAttribute("senha").equals("mysql")){
-        sql = "select distinct table_schema as BANCOS from information_schema.tables";
-    }
-    if(session.getAttribute("senha").equals("oracle")){
-        sql = "SELECT distinct grantee as BANCOS FROM DBA_SYS_PRIVS";
-    }
-    ResultSet rs = Banco.Conexao(sql); 
-       
+    
+    //if(session.getAttribute("banco").equals("mysql")){
+        Banco.sql = "select distinct table_schema as BANCOS from information_schema.tables";
+   // }
+   /* if(session.getAttribute("banco").equals("oracle")){
+        Buscabanco.sql = "SELECT distinct grantee as BANCOS FROM DBA_SYS_PRIVS";
+    }*/ 
+   try{
+    Banco.Conexao();
+   }
+   catch(Exception e){
+       out.print(e.getMessage());
+   }
 %>
 <!DOCTYPE html>
 <html>
@@ -49,20 +55,25 @@
     <body>
         <div id="geral" name="geral">
             <div id="topo" name="topo">
-                <textarea id="comando" name="comando" rows="10" cols="160"></textarea>
-                <input type="button" value="Enviar" />
+                <form action="executa.jsp" method="post">
+                    <textarea id="comando" name="comando" rows="10" cols="100"></textarea>
+                    <input type="submit" value="Enviar" />
+                </form>
             </div>
             <div id="lateral" name="lateral">
                 <%
-                    
-                    
-                    while(rs.next() ){
-                          out.println(rs.getString("BANCOS")+"<BR>");
+                    try{ 
+                        
+                        while(Banco.rs.next() ){
+                          out.println(Banco.rs.getString("BANCOS")+"<BR>");
                       }
+                    }
+                    catch (Exception e) {  
+                            out.println("Nao foi possivel conectar "+ e.getMessage());
+                    }
                 %>
             </div>
             <div id="conteudo"></div>
-            
         </div>
     </body>
 </html>
