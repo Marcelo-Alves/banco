@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.lang.String;
 
 public class Buscabanco {
     
@@ -41,11 +42,22 @@ public class Buscabanco {
         return null; 
     }   
     
-    
-    public void Executa() throws ClassNotFoundException, NullPointerException, SQLException, InstantiationException, IllegalAccessException{
-        DB();
-        Statement pstm = con.createStatement();
-        rs = pstm.executeQuery(sql);
+    public String Executa() throws ClassNotFoundException, NullPointerException, SQLException, InstantiationException, IllegalAccessException{
+        String reg = null;
+        int reg1;
+        try{
+            DB();
+            Statement pstm = con.createStatement();
+            reg1 = pstm.executeUpdate(sql);
+            //reg1.parseInt(String reg);
+            
+        }
+        catch (SQLException e) {  
+            return e.getMessage(); 
+       }
+        
+        
+        return reg;
     }
     
 }
